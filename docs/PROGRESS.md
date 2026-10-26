@@ -48,3 +48,11 @@ Beginn: 26.10.2026, ca. 22:22 Europe/Berlin. Aktualisierte Zeitgrenze: zehn Stun
 - API-Test: keine fremden Zugriffe, Validierung und atomarer Revisionskonflikt bei zwei Saves.
 - Lint, Typechecks, Unit-Tests, beide Integrationstests, beide E2E und Produktionsbuild grün.
 - Phase-2-CI 40405566648 erfolgreich. Keine Blockaden.
+
+## Phase 4 — Oberflächen geprüft
+- QR-Beitrittslink, vergrößerte Präsentation, mobile Antwortflächen, Podium, Host-Bericht/CSV.
+- Markenname, Logozeichen und Grundfarben zentral in packages/ui.
+- Integration: Host-Autorisierung für Berichte, vollständige CSV-Daten und Formelneutralisierung.
+- E2E: QR sichtbar, PIN vorausgefüllt, Präsentation umschaltbar, 390px-Ansicht ohne Overflow,
+  Podium sichtbar, Bericht geladen und CSV mit sechs Antworten heruntergeladen.
+- Abschluss Phase 4: gesamtes Check-Kommando und Produktionsbuild grün.

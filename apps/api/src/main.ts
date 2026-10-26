@@ -3,6 +3,7 @@ import { Controller, Get, Module, Catch, HttpException, ArgumentsHost, Exception
 import { NestFactory } from '@nestjs/core';
 import { initialize, pool } from './db';
 import { GameGateway } from './gateway';
+import { ReportsController } from './reports';
 import { AuthController } from './auth';
 import { ContentController,uploadDir } from './content';
 import cookieParser from 'cookie-parser';
@@ -11,7 +12,7 @@ import express from 'express';
 class Errors implements ExceptionFilter { catch(e:any,host:ArgumentsHost){const status=e instanceof HttpException?e.getStatus():400;host.switchToHttp().getResponse().status(status).json({message:e.code?'Anfrage konnte nicht gespeichert werden.':e.message??'Anfrage fehlgeschlagen.'});} }
 @Controller()
 class HealthController { @Get('health') async health() { await pool.query('SELECT 1'); return {ok:true}; } }
-@Module({controllers:[HealthController,AuthController,ContentController],providers:[GameGateway]})
+@Module({controllers:[HealthController,AuthController,ContentController,ReportsController],providers:[GameGateway]})
 class AppModule {}
 async function main() {
  await initialize();

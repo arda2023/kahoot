@@ -55,3 +55,11 @@ Bilder liegen in uploads/ und werden nicht eingecheckt. Konten, Sitzungen, Quizz
 Antworten liegen in PostgreSQL. Lokale Konten versenden keine E-Mails; Verifikation und
 Passwort-Rücksetzung sind noch nicht implementiert. Keine echten Schülerdaten verwenden,
 solange der Produktionsbetrieb nicht eingerichtet und geprüft wurde.
+
+## Präsentation und Ergebnisse
+In der Host-Lobby zeigt der QR-Code auf den Beitrittslink mit vorausgefüllter PIN.
+„Präsentationsansicht“ vergrößert Fragen und Antwortflächen für den Beamer; erneut klicken
+kehrt zur normalen Ansicht zurück. Spieler sehen Text und Symbole auf großen Touchflächen.
+Nach Spielende öffnet der Host den Ergebnisbericht mit Frageauswertung und CSV-Download.
+Der Bericht benötigt den Host-Zugang; Spieler können ihn nicht abrufen. Namen mit
+Formel-Präfix werden im CSV neutralisiert. Branding: packages/ui/src/index.ts.

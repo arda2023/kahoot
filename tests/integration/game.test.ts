@@ -10,7 +10,7 @@ beforeAll(async()=>{api=await startApi(3101,2);});
 afterAll(async()=>{sockets.forEach(s=>s.disconnect());await stopApi(api);await db.end();});
 it('30 players complete a round: durable ACKs, duplicate protection, no leaked solution and late rejection',async()=>{
  const host=await socketAt(3101);sockets.push(host);const auth=await cmd<Credentials>(host,{action:'create'});
- const players=await Promise.all(Array.from({length:30},async(_,i)=>{const s=await socketAt(3101);sockets.push(s);const c=await cmd<Credentials>(s,{action:'join',pin:auth.pin,name:`Spieler ${i}`});return {s,c};}));
+ const players=await Promise.all(Array.from({length:30},async(_,i)=>{const s=await socketAt(3101);sockets.push(s);const c=await cmd<Credentials>(s,{action:'join',pin:auth.pin,name:i===0?'=1+1':`Spieler ${i}`});return {s,c};}));
  expect((await sync(host,auth)).players).toHaveLength(30);
  await expect(cmd(players[0].s,{action:'advance',...players[0].c,version:31})).rejects.toThrow('Host');
  for(let q=0;q<3;q++){
@@ -32,5 +32,8 @@ it('30 players complete a round: durable ACKs, duplicate protection, no leaked s
  const final=await sync(host,auth);const scores=(await db.query('SELECT player_id,SUM(points)::int score FROM answers WHERE room_id=$1 GROUP BY player_id',[auth.roomId])).rows;
  for(const p of final.players)expect(p.score).toBe(scores.find(x=>x.player_id===p.id).score);
  expect((await db.query('SELECT count(*)::int n FROM answers WHERE room_id=$1',[auth.roomId])).rows[0].n).toBe(89);
+ const unauthorized=await fetch(`http://localhost:3101/rooms/${auth.roomId}/report`);expect(unauthorized.status).toBe(400);
+ const forbidden=await fetch(`http://localhost:3101/rooms/${auth.roomId}/report`,{headers:{Authorization:`Bearer ${players[0].c.token}`}});expect(forbidden.status).toBe(400);
+ const csv=await (await fetch(`http://localhost:3101/rooms/${auth.roomId}/report.csv`,{headers:{Authorization:`Bearer ${auth.token}`}})).text();expect(csv).toContain("\"'=1+1\"");expect(csv.split('\r\n')).toHaveLength(91);
  const reconnect=await socketAt(3101);sockets.push(reconnect);expect((await sync(reconnect,players[0].c)).phase).toBe('finished');
 });

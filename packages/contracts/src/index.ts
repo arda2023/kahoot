@@ -11,3 +11,8 @@ export interface Snapshot {
 }
 export interface Credentials { roomId: string; token: string; role: 'host' | 'player'; pin: string }
 export type Reply<T = unknown> = { ok: true; data: T } | { ok: false; error: string };
+export interface Report {
+ title:string; players:Ranking[];
+ questions:{text:string;correctAnswer:string;answered:number;correct:number;distribution:number[]}[];
+ rows:{name:string;question:string;answer:string;correct:boolean;points:number}[];
+}

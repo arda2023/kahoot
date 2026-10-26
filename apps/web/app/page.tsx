@@ -1,10 +1,11 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { brand } from '@quiz/ui';
 import type { Credentials } from '@quiz/contracts';
 import { command, connect } from '../lib/client';
 export default function Page() {
  const [pin,setPin]=useState(''),[name,setName]=useState(''),[error,setError]=useState(''),[busy,setBusy]=useState(false);
+ useEffect(()=>{const p=new URLSearchParams(window.location.search).get('pin');if(p&&/^\d{6}$/.test(p))setPin(p);},[]);
  async function go(action:'create'|'join') {
   setBusy(true);setError('');const socket=connect();
   try {const c=await command<Credentials>(socket,{action,pin,name});localStorage.setItem(`room:${c.roomId}`,JSON.stringify(c));window.location.href=`/play?room=${c.roomId}`;}
