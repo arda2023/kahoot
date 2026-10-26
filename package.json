@@ -14,10 +14,10 @@
     "build": "npm run build:packages && npm run build -w @quiz/api && npm run build -w @quiz/web",
     "dev": "npm run build:packages && concurrently -k -n api,web 'npm run dev -w @quiz/api' 'npm run dev -w @quiz/web'",
     "lint": "eslint .",
-    "typecheck": "npm run build:packages && npm run typecheck --workspaces --if-present",
+    "typecheck": "npm run build:packages && npm run typecheck --workspaces --if-present && tsc -p tests/tsconfig.json",
     "test": "npm run build:packages && vitest run packages/game-engine",
-    "test:integration": "npm run build:packages && vitest run tests/integration",
-    "test:e2e": "playwright test",
+    "test:integration": "npm run build:packages && npm run build -w @quiz/api && vitest run tests/integration",
+    "test:e2e": "npm run build:packages && npm run build -w @quiz/api && PLAYWRIGHT_BROWSERS_PATH=0 playwright test",
     "check": "npm run lint && npm run typecheck && npm test",
     "test:load": "tsx scripts/load.ts"
   },

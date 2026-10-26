@@ -20,3 +20,24 @@ npm run build # Produktionsbuild aller Pakete, API und Web
 ```
 
 Plan, Recherche und Fortschritt: docs/PLAN.md, docs/FEATURES.md, docs/PROGRESS.md.
+
+## Live-Spiel
+Auf der Startseite „Beispielquiz starten“ wählen. Spieler öffnen die Startseite in einem
+anderen Browserprofil/Gerät, geben PIN und Namen ein. Host startet; nach jeder Frage zeigt
+er die Rangliste und öffnet die nächste Frage. Zugänge werden pro Raum lokal im Browser
+aufbewahrt; Reload nimmt dieselbe Teilnahme wieder auf. Auf fremden Geräten nicht speichern.
+
+## Automatisierte Multiplayer- und Browsertests
+Dienste mit Compose starten. Einen laufenden Next-Entwicklungsserver vor E2E beenden.
+Die Tests starten/stoppen ihre eigenen API- und Webprozesse (Ports 3101, 3200, 3201).
+
+```sh
+npm run test:integration
+PLAYWRIGHT_BROWSERS_PATH=0 npx playwright install chromium
+npm run test:e2e
+```
+
+Integration: 30 Spieler, drei Fragen, 89 gespeicherte Antworten (eine absichtlich zu spät),
+Duplikate und keine Lösungen/Punkte vor Fristende. E2E: Host und zwei unabhängige Browser,
+inklusive Spieler-Reload nach bestätigter Antwort, bis zum Endstand. Testdaten bleiben
+in der lokalen Entwicklungsdatenbank und verwenden zufällige Raum-IDs.

@@ -10,3 +10,8 @@
 - Gleichstand bedeutet gleiche Platzierung (1, 1, 3); sortierte Namen stabilisieren nur die Anzeige.
 - Host steuert Auflösung -> Rangliste -> nächste Frage. Ablauf/alle Antworten schließen automatisch.
 - Keine zusätzlichen Agenten; Umsetzung und Prüfungen in diesem Chat.
+- Playwright nutzt vollständiges Chromium (channel chromium), weil die macOS Headless Shell
+  bei der Aktions-Stabilitätsprüfung hängen blieb. Kein erzwungener Klick als Testumgehung.
+  Browser-Temporärdaten werden für weitere Tests in .local/tmp im Projekt abgelegt.
+- Test-Seeds können per SEED_SECONDS beschleunigt werden; veröffentlichte Nutzerquizze
+  verwenden immer ihr gespeichertes Zeitlimit.
