@@ -23,3 +23,18 @@ Die Beschreibungen sind eigenständige Zusammenfassungen; Produktvarianten könn
 ## Nicht im aktuellen Umfang
 Teams, Musik, Themes, Bezahlfunktionen, KI, öffentliche Quizbibliothek, Konten, Editor,
 Kontoinformationen oder private Schnittstellen des Referenzprodukts.
+
+## Ergänzung: Editor und Berichte
+- Editor: Fragen hinzufügen, Typ wählen, Text/Optionen eingeben, Lösung markieren und Medien
+  ergänzen. Reihenfolge und Zeitlimit sind bearbeitbar. Unsere Umsetzung speichert Entwürfe
+  explizit und veröffentlicht unveränderliche Versionen.
+  [How to make a kahoot](https://support.kahoot.com/hc/en-us/articles/115002884788-How-to-make-a-kahoot)
+- Fragetypen: Quiz mit Auswahlantworten und Wahr/Falsch sind Grundformen; weitere Typen
+  umfassen Texteingaben, Sortierung und Umfragen. Unser Umfang: Single Choice und Wahr/Falsch.
+  [Question types](https://support.kahoot.com/hc/en-us/articles/115002308428-Kahoot-question-types)
+- Berichte: Zusammenfassung, Punktestand und Auswertung pro Frage/Teilnehmer sind abrufbar.
+  Tabellenexport enthält Antwortdetails und Punkte. Unsere Ausgabe ist CSV statt XLSX.
+  [Spreadsheet reports](https://support.kahoot.com/hc/en-us/articles/360035547493-How-to-download-and-use-spreadsheet-reports)
+
+Die frühere Ausschlussliste oben beschreibt Phase 2. Konten, Editor und Berichte gehören
+nach der Zielerweiterung zu den nachfolgenden Phasen.

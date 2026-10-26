@@ -38,8 +38,9 @@ Quizversionen bleiben während einer Runde unveränderlich.
 Später: weitere Fragetypen, Teammodus, öffentliche Sammlungen, Schul-SSO und Aufgaben.
 Langfristige zu messende Zielkapazität: 100 Räume mit je 100 Spielern; keine aktuelle Zusage.
 
-## Aktueller Auftrag: ausschließlich Phase 1 und 2
-Kein Login, kein Editor, keine Cloud, keine Bezahldienste. Originales Seed-Quiz.
+## Aktualisierter Auftrag: Phasen 1–6 und lokaler Teil von Phase 7
+Konten, Editor, Berichte, Gruppen und Ausfallsicherheit gehören zum aktualisierten Umfang.
+Keine Cloud, keine Bezahldienste. Originales Seed-Quiz und eigene Nutzerquizze.
 Docker Compose für PostgreSQL und Redis, npm-Workspaces für Web/API/Pakete.
 Abnahme: sauberer Start laut README; Lint und Typecheck; game-engine Unit-Tests;
 30 Socket.IO-Spieler durch gesamte Runde inklusive Duplikaten/späten Antworten;
@@ -49,4 +50,9 @@ Playwright mit Host und zwei Spielern bis Ende; GitHub Actions mit denselben Che
 Branch phase-1-2, kein Push auf main und kein Force-Push. Nach grüner Etappe Fortschritt
 in PROGRESS.md dokumentieren, committen und pushen. Offene Entscheidungen in DECISIONS.md.
 Nach drei erfolglosen Ansätzen Blockade dokumentieren und unabhängige Arbeit fortsetzen.
-Zeitgrenze: acht Stunden ab Arbeitsbeginn; dann Zustand mit erledigt/offen/blockiert sichern.
+Zeitgrenze: zehn Stunden ab Arbeitsbeginn; dann Zustand mit erledigt/offen/blockiert sichern.
+
+Zusätzliche Abnahme: Editor-E2E, unveränderliche Veröffentlichungen, lokale Bilder,
+CSV-Bericht, QR, zwei API-Instanzen mit Redis, transaktionale Outbox, Neustarttest
+mit bestätigter Antwort, Gruppenrollen und konkurrierende Speicherungen, Lasttest
+mit 100 Spielern und mehreren Räumen. Hosting/Backup/Pilot nur dokumentieren.

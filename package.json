@@ -1,0 +1,39 @@
+{
+  "name": "quizwerk",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "build:packages": "npm run build -w @quiz/contracts && npm run build -w @quiz/game-engine && npm run build -w @quiz/ui",
+    "build": "npm run build:packages && npm run build -w @quiz/api && npm run build -w @quiz/web",
+    "dev": "npm run build:packages && concurrently -k -n api,web 'npm run dev -w @quiz/api' 'npm run dev -w @quiz/web'",
+    "lint": "eslint .",
+    "typecheck": "npm run build:packages && npm run typecheck --workspaces --if-present",
+    "test": "npm run build:packages && vitest run packages/game-engine",
+    "test:integration": "npm run build:packages && vitest run tests/integration",
+    "test:e2e": "playwright test",
+    "check": "npm run lint && npm run typecheck && npm test",
+    "test:load": "tsx scripts/load.ts"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "@playwright/test": "^1.56.1",
+    "@types/node": "^24.10.0",
+    "concurrently": "^9.2.1",
+    "eslint": "^9.39.0",
+    "socket.io-client": "^4.8.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.0",
+    "vitest": "^5.0.5"
+  },
+  "overrides": {
+    "multer": "^2.5.0"
+  }
+}
