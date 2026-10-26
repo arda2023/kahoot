@@ -1,10 +1,134 @@
-'use client';
-import { useEffect,useState } from 'react';
-import { request } from '../../lib/client';
-interface Group {id:string;name:string;role:string;members:{id:string;email:string;role:string}[]}
-const roles:Record<string,string>={owner:'Eigentümer',editor:'Bearbeiter',viewer:'Betrachter'};
-export default function Groups(){const [groups,setGroups]=useState<Group[]>([]),[name,setName]=useState(''),[error,setError]=useState(''),[busy,setBusy]=useState(false);
- async function load(){setGroups(await request<Group[]>('/groups'));}useEffect(()=>{void load().catch(e=>setError(e.message));},[]);
- async function run(fn:()=>Promise<unknown>){setBusy(true);setError('');try{await fn();await load();}catch(e){setError((e as Error).message);}finally{setBusy(false);}}
- return <main><div className="eyebrow">ZUSAMMEN FRAGEN ENTWICKELN</div><h1>Meine Gruppen</h1><a href="/library">← Bibliothek</a>{error&&<p className="error" role="alert">{error}</p>}<section className="card"><h2>Gruppe erstellen</h2><form onSubmit={e=>{e.preventDefault();void run(()=>request('/groups',{name}));}}><label>Gruppenname<input required maxLength={80} value={name} onChange={e=>setName(e.target.value)}/></label><button disabled={busy}>Gruppe anlegen</button></form></section>{groups.map(g=><section className="card" key={g.id}><h2>{g.name}</h2><p>Deine Rolle: {roles[g.role]}</p><ul>{g.members.map(m=><li key={m.id}>{m.email} · {roles[m.role]} {g.role==='owner'&&m.role!=='owner'&&<button className="secondary small" disabled={busy} onClick={()=>void run(()=>request(`/groups/${g.id}/members/${m.id}`,undefined,'DELETE'))}>Mitglied entfernen</button>}</li>)}</ul>{g.role==='owner'&&<form onSubmit={e=>{e.preventDefault();const data=new FormData(e.currentTarget);void run(()=>request(`/groups/${g.id}/members`,{email:data.get('email'),role:data.get('role')},'PUT'));}}><label>Mitglied-E-Mail<input name="email" type="email" required/></label><label>Rolle<select name="role"><option value="editor">Bearbeiter</option><option value="viewer">Betrachter</option></select></label><button disabled={busy}>Mitglied hinzufügen / Rolle ändern</button><p>Die Person benötigt bereits ein Konto. Quizze werden im Editor für die Gruppe freigegeben.</p></form>}</section>)}</main>;
+"use client";
+import { useEffect, useState } from "react";
+import { request } from "../../lib/client";
+interface Group {
+  id: string;
+  name: string;
+  role: string;
+  members: { id: string; email: string; role: string }[];
+}
+const roles: Record<string, string> = {
+  owner: "Eigentümer",
+  editor: "Bearbeiter",
+  viewer: "Betrachter",
+};
+export default function Groups() {
+  const [groups, setGroups] = useState<Group[]>([]),
+    [name, setName] = useState(""),
+    [error, setError] = useState(""),
+    [busy, setBusy] = useState(false);
+  async function load() {
+    setGroups(await request<Group[]>("/groups"));
+  }
+  useEffect(() => {
+    void load().catch((e) => setError(e.message));
+  }, []);
+  async function run(fn: () => Promise<unknown>) {
+    setBusy(true);
+    setError("");
+    try {
+      await fn();
+      await load();
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <main>
+      <div className="eyebrow">ZUSAMMEN FRAGEN ENTWICKELN</div>
+      <h1>Meine Gruppen</h1>
+      <a href="/library">← Bibliothek</a>
+      {error && (
+        <p className="error" role="alert">
+          {error}
+        </p>
+      )}
+      <section className="card">
+        <h2>Gruppe erstellen</h2>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            void run(() => request("/groups", { name }));
+          }}
+        >
+          <label>
+            Gruppenname
+            <input
+              required
+              maxLength={80}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </label>
+          <button disabled={busy}>Gruppe anlegen</button>
+        </form>
+      </section>
+      {groups.map((g) => (
+        <section className="card" key={g.id}>
+          <h2>{g.name}</h2>
+          <p>Deine Rolle: {roles[g.role]}</p>
+          <ul>
+            {g.members.map((m) => (
+              <li key={m.id}>
+                {m.email} · {roles[m.role]}{" "}
+                {g.role === "owner" && m.role !== "owner" && (
+                  <button
+                    className="secondary small"
+                    disabled={busy}
+                    onClick={() =>
+                      void run(() =>
+                        request(
+                          `/groups/${g.id}/members/${m.id}`,
+                          undefined,
+                          "DELETE",
+                        ),
+                      )
+                    }
+                  >
+                    Mitglied entfernen
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
+          {g.role === "owner" && (
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const data = new FormData(e.currentTarget);
+                void run(() =>
+                  request(
+                    `/groups/${g.id}/members`,
+                    { email: data.get("email"), role: data.get("role") },
+                    "PUT",
+                  ),
+                );
+              }}
+            >
+              <label>
+                Mitglied-E-Mail
+                <input name="email" type="email" required />
+              </label>
+              <label>
+                Rolle
+                <select name="role">
+                  <option value="editor">Bearbeiter</option>
+                  <option value="viewer">Betrachter</option>
+                </select>
+              </label>
+              <button disabled={busy}>
+                Mitglied hinzufügen / Rolle ändern
+              </button>
+              <p>
+                Die Person benötigt bereits ein Konto. Quizze werden im Editor
+                für die Gruppe freigegeben.
+              </p>
+            </form>
+          )}
+        </section>
+      ))}
+    </main>
+  );
 }

@@ -1,4 +1,4 @@
-export const contentSchema=`
+export const contentSchema = `
 CREATE TABLE IF NOT EXISTS users (id uuid PRIMARY KEY,email text UNIQUE NOT NULL,password_hash text NOT NULL,created_at timestamptz NOT NULL DEFAULT now());
 CREATE TABLE IF NOT EXISTS user_sessions (token_hash text PRIMARY KEY,user_id uuid NOT NULL REFERENCES users(id),expires_at timestamptz NOT NULL);
 CREATE TABLE IF NOT EXISTS quizzes (id uuid PRIMARY KEY,owner_id uuid NOT NULL REFERENCES users(id),draft jsonb NOT NULL,revision int NOT NULL DEFAULT 1,archived boolean NOT NULL DEFAULT false,created_at timestamptz NOT NULL DEFAULT now());

@@ -1,18 +1,32 @@
-import { Pool, PoolClient } from 'pg';
-import { groupsSchema } from './groups-schema';
-import { outboxSchema } from './outbox-schema';
-import { contentSchema } from './content-schema';
-export const pool = new Pool({ connectionString: process.env.DATABASE_URL ?? 'postgresql://quiz@127.0.0.1:55432/quiz', max: 20 });
-export async function transaction<T>(fn:(client:PoolClient)=>Promise<T>):Promise<T> {
+import { Pool, PoolClient } from "pg";
+import { groupsSchema } from "./groups-schema";
+import { outboxSchema } from "./outbox-schema";
+import { contentSchema } from "./content-schema";
+export const pool = new Pool({
+  connectionString:
+    process.env.DATABASE_URL ?? "postgresql://quiz@127.0.0.1:55432/quiz",
+  max: 20,
+});
+export async function transaction<T>(
+  fn: (client: PoolClient) => Promise<T>,
+): Promise<T> {
   const client = await pool.connect();
-  try { await client.query('BEGIN'); const result = await fn(client); await client.query('COMMIT'); return result; }
-  catch (error) { await client.query('ROLLBACK'); throw error; }
-  finally { client.release(); }
+  try {
+    await client.query("BEGIN");
+    const result = await fn(client);
+    await client.query("COMMIT");
+    return result;
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
 }
 export async function initialize() {
- await transaction(async c=>{
-  await c.query('SELECT pg_advisory_xact_lock(912837401)');
-  await c.query(`
+  await transaction(async (c) => {
+    await c.query("SELECT pg_advisory_xact_lock(912837401)");
+    await c.query(`
     CREATE TABLE IF NOT EXISTS rooms (
       id uuid PRIMARY KEY, pin text UNIQUE NOT NULL, host_hash text NOT NULL,
       quiz jsonb NOT NULL, phase text NOT NULL DEFAULT 'lobby', question_index int NOT NULL DEFAULT -1,
@@ -34,8 +48,8 @@ export async function initialize() {
     );
     CREATE INDEX IF NOT EXISTS answers_room ON answers(room_id,question_index);
   `);
-  await c.query(contentSchema);
-  await c.query(groupsSchema);
-  await c.query(outboxSchema);
- });
+    await c.query(contentSchema);
+    await c.query(groupsSchema);
+    await c.query(outboxSchema);
+  });
 }

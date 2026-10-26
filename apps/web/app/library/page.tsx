@@ -1,15 +1,222 @@
-'use client';
-import { useEffect,useState } from 'react';
-import type { Credentials,Quiz } from '@quiz/contracts';
-import { request } from '../../lib/client';
-interface Item {id:string;draft:Quiz;revision:number;archived:boolean;published_id:string|null;accessRole:'owner'|'editor'|'viewer'}
-export default function Library(){
- const [user,setUser]=useState<{email:string}|null>(null),[items,setItems]=useState<Item[]>([]),[error,setError]=useState(''),[mode,setMode]=useState('login'),[email,setEmail]=useState(''),[password,setPassword]=useState(''),[busy,setBusy]=useState(false),[loading,setLoading]=useState(true);
- async function refresh(){setItems(await request<Item[]>('/quizzes'));}
- useEffect(()=>{void request<{email:string}>('/auth/me').then(u=>{setUser(u);return refresh();}).catch(()=>{}).finally(()=>setLoading(false));},[]);
- async function run(fn:()=>Promise<void>){setBusy(true);setError('');try{await fn();}catch(e){setError((e as Error).message);}finally{setBusy(false);}}
- async function auth(){const u=await request<{email:string}>(`/auth/${mode}`,{email,password});setUser(u);setPassword('');await refresh();}
- async function create(){const q=await request<Item>('/quizzes',{});window.location.href=`/editor?id=${q.id}`;}
- async function host(id:string){const c=await request<Credentials>(`/quizzes/${id}/host`,{});localStorage.setItem(`room:${c.roomId}`,JSON.stringify(c));window.location.href=`/play?room=${c.roomId}`;}
- return <main><div className="eyebrow">DEIN WISSEN, DEINE FRAGEN</div><h1>Meine Quizze</h1>{error&&<p role="alert" className="error">{error}</p>}{loading?<p>Laden …</p>:!user?<section className="card auth"><h2>{mode==='login'?'Willkommen zurück':'Erstellerkonto anlegen'}</h2><form onSubmit={e=>{e.preventDefault();void run(auth);}}><label>E-Mail<input type="email" required value={email} onChange={e=>setEmail(e.target.value)} autoComplete="email"/></label><label>Passwort<input type="password" required minLength={10} maxLength={128} value={password} onChange={e=>setPassword(e.target.value)} autoComplete={mode==='login'?'current-password':'new-password'}/></label><button disabled={busy}>{mode==='login'?'Anmelden':'Registrieren'}</button></form><button className="secondary small" onClick={()=>setMode(mode==='login'?'register':'login')}>{mode==='login'?'Neues Konto erstellen':'Ich habe schon ein Konto'}</button></section>:<><div className="actions"><button disabled={busy} onClick={()=>void run(create)}>Quiz erstellen</button><a className="button secondary" href="/groups">Gruppen</a><button className="secondary" onClick={()=>void run(async()=>{await request('/auth/logout',{});setUser(null);setItems([]);})}>Abmelden</button></div><p>Angemeldet als {user.email}</p>{!items.length&&<section className="card"><h2>Hier beginnt deine erste Runde.</h2><p>Erstelle Fragen, veröffentliche dein Quiz und lade andere zum Spielen ein.</p></section>}<div className="columns">{items.map(q=><section className="card" key={q.id}><div className="eyebrow">{q.archived?'ARCHIVIERT':q.published_id?'VERÖFFENTLICHT + ENTWURF':'ENTWURF'}</div><h2>{q.draft.title||'Ohne Titel'}</h2><p>{q.draft.questions.length} Fragen · Stand {q.revision}</p><div className="actions">{!q.archived&&<a className="button secondary small" href={`/editor?id=${q.id}`}>{q.accessRole==='viewer'?'Ansehen':'Bearbeiten'}</a>}{q.published_id&&!q.archived&&<button className="small" disabled={busy} onClick={()=>void run(()=>host(q.id))}>Spielen</button>}<button className="secondary small" disabled={busy} onClick={()=>void run(async()=>{await request(`/quizzes/${q.id}/duplicate`,{});await refresh();})}>Duplizieren</button>{q.accessRole==='owner'&&<button className="secondary small" disabled={busy} onClick={()=>void run(async()=>{await request(`/quizzes/${q.id}/archive`,{archived:!q.archived});await refresh();})}>{q.archived?'Wiederherstellen':'Archivieren'}</button>}</div></section>)}</div></>}</main>;
+"use client";
+import { useEffect, useState } from "react";
+import type { Credentials, Quiz } from "@quiz/contracts";
+import { request } from "../../lib/client";
+interface Item {
+  id: string;
+  draft: Quiz;
+  revision: number;
+  archived: boolean;
+  published_id: string | null;
+  accessRole: "owner" | "editor" | "viewer";
+}
+export default function Library() {
+  const [user, setUser] = useState<{ email: string } | null>(null),
+    [items, setItems] = useState<Item[]>([]),
+    [error, setError] = useState(""),
+    [mode, setMode] = useState("login"),
+    [email, setEmail] = useState(""),
+    [password, setPassword] = useState(""),
+    [busy, setBusy] = useState(false),
+    [loading, setLoading] = useState(true);
+  async function refresh() {
+    setItems(await request<Item[]>("/quizzes"));
+  }
+  useEffect(() => {
+    void request<{ email: string }>("/auth/me")
+      .then((u) => {
+        setUser(u);
+        return refresh();
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+  async function run(fn: () => Promise<void>) {
+    setBusy(true);
+    setError("");
+    try {
+      await fn();
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  async function auth() {
+    const u = await request<{ email: string }>(`/auth/${mode}`, {
+      email,
+      password,
+    });
+    setUser(u);
+    setPassword("");
+    await refresh();
+  }
+  async function create() {
+    const q = await request<Item>("/quizzes", {});
+    window.location.href = `/editor?id=${q.id}`;
+  }
+  async function host(id: string) {
+    const c = await request<Credentials>(`/quizzes/${id}/host`, {});
+    localStorage.setItem(`room:${c.roomId}`, JSON.stringify(c));
+    window.location.href = `/play?room=${c.roomId}`;
+  }
+  return (
+    <main>
+      <div className="eyebrow">DEIN WISSEN, DEINE FRAGEN</div>
+      <h1>Meine Quizze</h1>
+      {error && (
+        <p role="alert" className="error">
+          {error}
+        </p>
+      )}
+      {loading ? (
+        <p>Laden …</p>
+      ) : !user ? (
+        <section className="card auth">
+          <h2>
+            {mode === "login" ? "Willkommen zurück" : "Erstellerkonto anlegen"}
+          </h2>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              void run(auth);
+            }}
+          >
+            <label>
+              E-Mail
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+              />
+            </label>
+            <label>
+              Passwort
+              <input
+                type="password"
+                required
+                minLength={10}
+                maxLength={128}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete={
+                  mode === "login" ? "current-password" : "new-password"
+                }
+              />
+            </label>
+            <button disabled={busy}>
+              {mode === "login" ? "Anmelden" : "Registrieren"}
+            </button>
+          </form>
+          <button
+            className="secondary small"
+            onClick={() => setMode(mode === "login" ? "register" : "login")}
+          >
+            {mode === "login"
+              ? "Neues Konto erstellen"
+              : "Ich habe schon ein Konto"}
+          </button>
+        </section>
+      ) : (
+        <>
+          <div className="actions">
+            <button disabled={busy} onClick={() => void run(create)}>
+              Quiz erstellen
+            </button>
+            <a className="button secondary" href="/groups">
+              Gruppen
+            </a>
+            <button
+              className="secondary"
+              onClick={() =>
+                void run(async () => {
+                  await request("/auth/logout", {});
+                  setUser(null);
+                  setItems([]);
+                })
+              }
+            >
+              Abmelden
+            </button>
+          </div>
+          <p>Angemeldet als {user.email}</p>
+          {!items.length && (
+            <section className="card">
+              <h2>Hier beginnt deine erste Runde.</h2>
+              <p>
+                Erstelle Fragen, veröffentliche dein Quiz und lade andere zum
+                Spielen ein.
+              </p>
+            </section>
+          )}
+          <div className="columns">
+            {items.map((q) => (
+              <section className="card" key={q.id}>
+                <div className="eyebrow">
+                  {q.archived
+                    ? "ARCHIVIERT"
+                    : q.published_id
+                      ? "VERÖFFENTLICHT + ENTWURF"
+                      : "ENTWURF"}
+                </div>
+                <h2>{q.draft.title || "Ohne Titel"}</h2>
+                <p>
+                  {q.draft.questions.length} Fragen · Stand {q.revision}
+                </p>
+                <div className="actions">
+                  {!q.archived && (
+                    <a
+                      className="button secondary small"
+                      href={`/editor?id=${q.id}`}
+                    >
+                      {q.accessRole === "viewer" ? "Ansehen" : "Bearbeiten"}
+                    </a>
+                  )}
+                  {q.published_id && !q.archived && (
+                    <button
+                      className="small"
+                      disabled={busy}
+                      onClick={() => void run(() => host(q.id))}
+                    >
+                      Spielen
+                    </button>
+                  )}
+                  <button
+                    className="secondary small"
+                    disabled={busy}
+                    onClick={() =>
+                      void run(async () => {
+                        await request(`/quizzes/${q.id}/duplicate`, {});
+                        await refresh();
+                      })
+                    }
+                  >
+                    Duplizieren
+                  </button>
+                  {q.accessRole === "owner" && (
+                    <button
+                      className="secondary small"
+                      disabled={busy}
+                      onClick={() =>
+                        void run(async () => {
+                          await request(`/quizzes/${q.id}/archive`, {
+                            archived: !q.archived,
+                          });
+                          await refresh();
+                        })
+                      }
+                    >
+                      {q.archived ? "Wiederherstellen" : "Archivieren"}
+                    </button>
+                  )}
+                </div>
+              </section>
+            ))}
+          </div>
+        </>
+      )}
+    </main>
+  );
 }

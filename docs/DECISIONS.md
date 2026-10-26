@@ -36,3 +36,11 @@
   dürfen spielen/duplizieren. Widerruf wirkt bei der nächsten autorisierten Anfrage.
 - Gleichzeitige Änderungen werden per Revision und Zeilensperre abgeglichen. Keine automatische
   Zusammenführung: Konflikt bleibt sichtbar und lokale Eingaben werden nicht verworfen.
+- Lasttest verwendet native Socket.IO-Clients statt eines zusätzlichen Lasttestdienstes.
+  Er simuliert echte Beitritte, Antworten, Duplikate, Snapshot-Abfragen und zwei API-Ports.
+- Die erste Messung zeigte bei 500 Spielern p95 1222 ms für Antwortbestätigungen.
+  Deshalb werden Invalidierungen über Outbox gebündelt; konsistente Snapshots lesen unter
+  REPEATABLE READ ohne Raum-Schreibsperre. Fristablauf übernimmt der dauerhafte Timer-Worker.
+- Rate Limits liegen atomar in Redis und gelten instanzübergreifend. Hohe Beitrittsgrenze
+  pro IP berücksichtigt viele Schüler hinter derselben Schul-IP; Antworten haben zusätzlich
+  ein Limit pro Teilnahme-Token. Ein Redis-Ausfall führt zur Ablehnung statt unkontrolliertem Fallback.

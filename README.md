@@ -22,12 +22,14 @@ npm run build # Produktionsbuild aller Pakete, API und Web
 Plan, Recherche und Fortschritt: docs/PLAN.md, docs/FEATURES.md, docs/PROGRESS.md.
 
 ## Live-Spiel
+
 Auf der Startseite „Beispielquiz starten“ wählen. Spieler öffnen die Startseite in einem
-anderen Browserprofil/Gerät, geben PIN und Namen ein. Host startet; nach jeder Frage zeigt
+anderen Browserprofil auf demselben Rechner, geben PIN und Namen ein. Host startet; nach jeder Frage zeigt
 er die Rangliste und öffnet die nächste Frage. Zugänge werden pro Raum lokal im Browser
 aufbewahrt; Reload nimmt dieselbe Teilnahme wieder auf. Auf fremden Geräten nicht speichern.
 
 ## Automatisierte Multiplayer- und Browsertests
+
 Dienste mit Compose starten. Einen laufenden Next-Entwicklungsserver vor E2E beenden.
 Die Tests starten/stoppen ihre eigenen API- und Webprozesse (Ports 3101, 3200, 3201).
 
@@ -43,6 +45,7 @@ inklusive Spieler-Reload nach bestätigter Antwort, bis zum Endstand. Testdaten 
 in der lokalen Entwicklungsdatenbank und verwenden zufällige Raum-IDs.
 
 ## Eigene Quizze
+
 Unter „Meine Quizze“ ein lokales Erstellerkonto registrieren (Passwort mindestens zehn
 Zeichen). Im Editor Fragen hinzufügen, Single Choice oder Wahr/Falsch wählen, Zeitlimit
 festlegen und optional ein Bild hochladen. Fragen lassen sich verschieben und entfernen.
@@ -57,6 +60,7 @@ Passwort-Rücksetzung sind noch nicht implementiert. Keine echten Schülerdaten 
 solange der Produktionsbetrieb nicht eingerichtet und geprüft wurde.
 
 ## Präsentation und Ergebnisse
+
 In der Host-Lobby zeigt der QR-Code auf den Beitrittslink mit vorausgefüllter PIN.
 „Präsentationsansicht“ vergrößert Fragen und Antwortflächen für den Beamer; erneut klicken
 kehrt zur normalen Ansicht zurück. Spieler sehen Text und Symbole auf großen Touchflächen.
@@ -65,6 +69,7 @@ Der Bericht benötigt den Host-Zugang; Spieler können ihn nicht abrufen. Namen 
 Formel-Präfix werden im CSV neutralisiert. Branding: packages/ui/src/index.ts.
 
 ## Zwei API-Instanzen und Wiederherstellung
+
 Nach `npm run build:packages && npm run build -w @quiz/api` zwei Terminals öffnen:
 
 ```sh
@@ -74,8 +79,7 @@ PORT=3002 node apps/api/dist/main.js
 ```
 
 Beide verwenden dieselben Compose-Dienste. Socket.IO hat einen Redis-Adapter; die Outbox
-verteilt persistierte Zustandsänderungen an beide Instanzen. Web verwendet standardmäßig
-3001. Für eine zweite Web-Instanz den ersten Next-Devserver beenden und mit
+verteilt persistierte Zustandsänderungen an beide Instanzen. Web verwendet standardmäßig 3001. Für eine zweite Web-Instanz den ersten Next-Devserver beenden und mit
 `NEXT_PUBLIC_API_URL=http://localhost:3002 npm run dev -w @quiz/web` starten.
 Ein automatischer Load Balancer ist lokal nicht eingerichtet; den Instanzwechsel testen
 Socket.IO-Integrationstests direkt. Im normalen Betrieb verbindet ein Reload wieder mit
@@ -90,6 +94,7 @@ Redis-Pub/Sub ist kein dauerhaftes Client-Postfach: Reconnect und regelmäßiger
 schließen Zustellungslücken. PostgreSQL ist die maßgebliche Datenquelle.
 
 ## Zusammenarbeit
+
 Unter „Gruppen“ eine Gruppe anlegen und bereits registrierte Personen über ihre E-Mail
 hinzufügen. Eigentümer verwalten Mitglieder und Rollen. Im Quiz-Editor kann der Quiz-Eigentümer
 für eigene Gruppen freigeben. Gruppen-Bearbeiter (einschließlich Gruppen-Eigentümer) dürfen
@@ -98,3 +103,24 @@ Nur der Quiz-Eigentümer archiviert das Original oder ändert dessen Freigaben.
 Bei parallelen Änderungen gewinnt genau ein Speichervorgang. Der andere erhält einen
 Konflikthinweis, behält seine Eingaben und kann den aktuellen Stand ausdrücklich neu laden.
 Das ist Zusammenarbeit mit Versionsprüfung, kein gemeinsames Echtzeit-Textdokument.
+
+## Moderation und Lasttests
+
+Der Host kann die Lobby sperren/entsperren und einzelne Spieler vor Spielstart entfernen.
+Entfernte Teilnahme-Tokens verlieren ihren Zugriff. Rate Limits sind in Redis hinterlegt:
+600 Befehle/Minute je Socket, 60 Antworten/Minute je Token, 60 Raumerstellungen und 2000
+Beitritte/Minute je IP; HTTP 2000, Auth-Endpunkte 120/Minute je IP, Login zusätzlich 20/Minute
+je E-Mail. Bei Überschreitung warten und erneut versuchen; HTTP liefert Status 429.
+
+```sh
+npm run test:load
+```
+
+Das Skript startet zwei API-Instanzen auf 3301/3302 und prüft zunächst 100 Spieler in einem
+Raum, dann 500 Spieler in fünf Räumen. Alle spielen drei Fragen, jeder zehnte Client sendet
+zusätzlich Duplikate. Antworten und Endstände werden gegen PostgreSQL geprüft. Ausgabe:
+.local/load-results.json; dokumentierte Messung: docs/LOADTEST.md. Der Test benötigt laufendes
+Compose und hinterlässt eigene Testdaten in PostgreSQL. Nicht gegen fremde Server ausführen.
+
+Hosting, Backup/Restore und Pilotplan stehen in docs/OPERATIONS.md; diese Infrastruktur
+wird hier nicht eingerichtet. Die Standardadressen sind nur auf diesem Rechner erreichbar.

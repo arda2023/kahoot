@@ -1,0 +1,68 @@
+{
+  "at": "2026-10-26T21:51:28.847Z",
+  "environment": {
+    "node": "v24.21.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "cpu": "Apple M5",
+    "logicalCpus": 10
+  },
+  "results": [
+    {
+      "rooms": 1,
+      "playersPerRoom": 100,
+      "totalPlayers": 100,
+      "answers": 300,
+      "seconds": 2.2,
+      "errors": 0,
+      "metrics": {
+        "join": {
+          "count": 100,
+          "p50": 134,
+          "p95": 273,
+          "max": 279
+        },
+        "answer": {
+          "count": 330,
+          "p50": 125,
+          "p95": 374,
+          "max": 500
+        },
+        "snapshot": {
+          "count": 1694,
+          "p50": 40,
+          "p95": 91,
+          "max": 145
+        }
+      }
+    },
+    {
+      "rooms": 5,
+      "playersPerRoom": 100,
+      "totalPlayers": 500,
+      "answers": 1500,
+      "seconds": 6.84,
+      "errors": 0,
+      "metrics": {
+        "join": {
+          "count": 500,
+          "p50": 192,
+          "p95": 420,
+          "max": 573
+        },
+        "answer": {
+          "count": 1650,
+          "p50": 309,
+          "p95": 650,
+          "max": 966
+        },
+        "snapshot": {
+          "count": 8450,
+          "p50": 137,
+          "p95": 439,
+          "max": 632
+        }
+      }
+    }
+  ]
+}

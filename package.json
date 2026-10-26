@@ -13,13 +13,14 @@
     "build:packages": "npm run build -w @quiz/contracts && npm run build -w @quiz/game-engine && npm run build -w @quiz/ui",
     "build": "npm run build:packages && npm run build -w @quiz/api && npm run build -w @quiz/web",
     "dev": "npm run build:packages && concurrently -k -n api,web 'npm run dev -w @quiz/api' 'npm run dev -w @quiz/web'",
-    "lint": "eslint .",
+    "lint": "eslint . && prettier --check .",
     "typecheck": "npm run build:packages && npm run typecheck --workspaces --if-present && tsc -p tests/tsconfig.json",
     "test": "npm run build:packages && vitest run packages/game-engine",
     "test:integration": "npm run build:packages && npm run build -w @quiz/api && vitest run tests/integration",
     "test:e2e": "npm run build:packages && npm run build -w @quiz/api && PLAYWRIGHT_BROWSERS_PATH=0 playwright test",
     "check": "npm run lint && npm run typecheck && npm test",
-    "test:load": "tsx scripts/load.ts"
+    "test:load": "npm run build:packages && npm run build -w @quiz/api && tsx scripts/load.ts",
+    "format": "prettier --write ."
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",
@@ -27,6 +28,7 @@
     "@types/node": "^24.10.0",
     "concurrently": "^9.2.1",
     "eslint": "^9.39.0",
+    "prettier": "^3.9.10",
     "socket.io-client": "^4.8.1",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
