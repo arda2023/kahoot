@@ -38,3 +38,13 @@ Beginn: 26.10.2026, ca. 22:22 Europe/Berlin. Aktualisierte Zeitgrenze: zehn Stun
 - Screenshot des Endergebnisses visuell geprüft, keine abgeschnittenen Inhalte.
 - Gesamtes npm run check inklusive Test-Typecheck und Produktionsbuild erneut grün.
 - CI um Integration und Playwright erweitert. Keine offenen lokalen Blockaden.
+
+## Phase 3 — grün
+- Lokale Registrierung/Login/Logout, passwortgehashte Konten und HttpOnly-Sitzungen.
+- Editor: Single Choice, Wahr/Falsch, Bilder, Zeitlimit, Sortierung, Entwurf/Veröffentlichung.
+- Bibliothek: Bearbeiten, Duplizieren, Archivieren/Wiederherstellen und Spielen.
+- E2E erstellt Quiz mit Bild und zwei Fragetypen, sortiert, veröffentlicht, verändert nur den
+  Entwurf und spielt nach erneutem Login weiterhin die unveränderte Veröffentlichung.
+- API-Test: keine fremden Zugriffe, Validierung und atomarer Revisionskonflikt bei zwei Saves.
+- Lint, Typechecks, Unit-Tests, beide Integrationstests, beide E2E und Produktionsbuild grün.
+- Phase-2-CI 40405566648 erfolgreich. Keine Blockaden.

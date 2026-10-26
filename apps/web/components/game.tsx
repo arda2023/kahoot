@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import type { Credentials, Snapshot } from '@quiz/contracts';
 import { answerSymbols } from '@quiz/ui';
-import { command, connect } from '../lib/client';
+import { API, command, connect } from '../lib/client';
 export default function Game() {
  const [state,setState]=useState<Snapshot|null>(null),[error,setError]=useState(''),[connected,setConnected]=useState(false),[busy,setBusy]=useState(false),[now,setNow]=useState(Date.now());
  const socket=useRef<Socket|null>(null), auth=useRef<Credentials|null>(null), offset=useRef(0);
@@ -29,7 +29,7 @@ export default function Game() {
  {state.phase==='lobby'?<><div className="eyebrow">GEMEINSAM GEHT’S LOS</div><h1>Alle bereit?</h1><p>Beitreten mit Spiel-PIN</p><div className="pin" data-testid="pin">{state.pin}</div><p>{state.players.length} Personen in der Lobby</p><div className="players">{state.players.map(p=><span key={p.id} className="chip">{p.name}</span>)}</div>{host?<button disabled={!connected||busy||!state.players.length} onClick={()=>void send('advance')}>Spiel starten</button>:<p role="status">Warte, bis der Host das Spiel startet.</p>}</>:
  <><div className="eyebrow">FRAGE {state.questionIndex+1} VON {state.questionCount}</div>
  {state.phase==='question'||state.phase==='reveal'?<><div className="questionheading"><h1>{state.question?.text}</h1><span className="timer" aria-label="Verbleibende Sekunden">{state.phase==='question'?remaining:'✓'}</span></div>
- {state.question?.image&&<img className="questionimage" alt="Bild zur Frage" src={state.question.image}/>}
+ {state.question?.image&&<img className="questionimage" alt="Bild zur Frage" src={`${API}${state.question.image}`}/>}
  <div className="answers">{state.question?.options.map((option,i)=><button key={i} className={`answer answer-${i} ${state.correctIndex===i?'correct':''}`} disabled={host||!connected||busy||state.phase!=='question'||state.myAnswer!==undefined||remaining===0} onClick={()=>void send('answer',{choice:i,questionIndex:state.questionIndex})}><span aria-hidden="true">{answerSymbols[i]}</span>{option}{state.correctIndex===i?' ✓':''}</button>)}</div>
  <p role="status">{state.myAnswer!==undefined?'Antwort gespeichert ✓':host?`${state.answeredCount} von ${state.players.length} Antworten`:state.phase==='question'?'Wähle eine Antwort.':'Zeit abgelaufen.'}</p>
  {state.phase==='reveal'&&<section className="card"><h2>Auflösung</h2><p>Richtig: {state.question?.options[state.correctIndex!]}</p>{!host&&<p>{state.myPoints??0} Punkte in dieser Frage</p>}{host&&<button disabled={busy} onClick={()=>void send('advance')}>Rangliste anzeigen</button>}</section>}</>:

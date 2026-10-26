@@ -15,3 +15,9 @@
   Browser-Temporärdaten werden für weitere Tests in .local/tmp im Projekt abgelegt.
 - Test-Seeds können per SEED_SECONDS beschleunigt werden; veröffentlichte Nutzerquizze
   verwenden immer ihr gespeichertes Zeitlimit.
+- Konten: lokales E-Mail/Passwort-Login, scrypt mit individuellem Salt, HttpOnly-Cookie und
+  gehashte Sitzungstokens. Keine E-Mail-Verifikation oder Passwort-Rücksetzung im lokalen MVP.
+- Bilder: bis 5 MB, PNG/JPEG/WebP, serverseitig dekodiert, auf höchstens 1600×1200 verkleinert
+  und als WebP neu gespeichert. Uploads liegen ausschließlich im Projektordner uploads/.
+- Editor speichert bewusst per Schaltfläche, warnt bei ungespeicherten Änderungen und prüft
+  Revisionsnummern. Veröffentlichen erzeugt einen neuen unveränderlichen Datensatz.

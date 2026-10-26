@@ -1,4 +1,5 @@
 import { Pool, PoolClient } from 'pg';
+import { contentSchema } from './content-schema';
 export const pool = new Pool({ connectionString: process.env.DATABASE_URL ?? 'postgresql://quiz@127.0.0.1:55432/quiz', max: 20 });
 export async function transaction<T>(fn:(client:PoolClient)=>Promise<T>):Promise<T> {
   const client = await pool.connect();
@@ -29,4 +30,5 @@ export async function initialize() {
     );
     CREATE INDEX IF NOT EXISTS answers_room ON answers(room_id,question_index);
   `);
+  await pool.query(contentSchema);
 }

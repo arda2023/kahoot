@@ -41,3 +41,17 @@ Integration: 30 Spieler, drei Fragen, 89 gespeicherte Antworten (eine absichtlic
 Duplikate und keine Lösungen/Punkte vor Fristende. E2E: Host und zwei unabhängige Browser,
 inklusive Spieler-Reload nach bestätigter Antwort, bis zum Endstand. Testdaten bleiben
 in der lokalen Entwicklungsdatenbank und verwenden zufällige Raum-IDs.
+
+## Eigene Quizze
+Unter „Meine Quizze“ ein lokales Erstellerkonto registrieren (Passwort mindestens zehn
+Zeichen). Im Editor Fragen hinzufügen, Single Choice oder Wahr/Falsch wählen, Zeitlimit
+festlegen und optional ein Bild hochladen. Fragen lassen sich verschieben und entfernen.
+„Entwurf speichern“ speichert Änderungen; „Veröffentlichen“ friert eine neue Version ein.
+„Spielen“ in der Bibliothek verwendet die zuletzt veröffentlichte Version. Ein laufendes
+Spiel bleibt auch von späteren Veröffentlichungen unverändert. Duplizieren und Archivieren
+sind ebenfalls in der Bibliothek verfügbar.
+
+Bilder liegen in uploads/ und werden nicht eingecheckt. Konten, Sitzungen, Quizze und
+Antworten liegen in PostgreSQL. Lokale Konten versenden keine E-Mails; Verifikation und
+Passwort-Rücksetzung sind noch nicht implementiert. Keine echten Schülerdaten verwenden,
+solange der Produktionsbetrieb nicht eingerichtet und geprüft wurde.
