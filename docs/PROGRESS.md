@@ -67,3 +67,13 @@ Beginn: 26.10.2026, ca. 22:22 Europe/Berlin. Aktualisierte Zeitgrenze: zehn Stun
   nächste Frage wartet auf Host. E2E prüft nun Host- und Spieler-Reload.
 - Check, vier Integrationstests, zwei E2E und Produktionsbuild grün. Keine Blockaden.
 - Phase-3-CI 40406141175 erfolgreich.
+
+## Phase 6 — grün
+- Gruppen mit Eigentümer/Bearbeiter/Betrachter, Mitgliedsverwaltung und Quizfreigaben.
+- Server erzwingt Rollen und Widerruf; Archiv und Freigaben bleiben beim Quiz-Eigentümer.
+- Integration: Eigentümer und Bearbeiter speichern parallel, exakt ein Erfolg und ein 409;
+  Gewinnerstand bleibt erhalten. Betrachter darf lesen/spielen, nicht schreiben/veröffentlichen.
+- E2E: Gruppe/Freigabe über Oberfläche; zweiter Editor zeigt Konflikt, behält Eingaben,
+  lädt aktuellen Stand erst auf ausdrücklichen Klick. Rollen bleiben nach Speichern erhalten.
+- Fünf Integrationstests, drei E2E, Check und Produktionsbuild grün.
+- Phase-5-CI 40406768824 erfolgreich. Keine Blockaden.

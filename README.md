@@ -88,3 +88,13 @@ Abgabe derselben Antwortidentität liefert den gespeicherten Wert, ohne weitere 
 Outbox-Invalidierungen können mehrfach kommen; Clients laden einen versionierten Snapshot.
 Redis-Pub/Sub ist kein dauerhaftes Client-Postfach: Reconnect und regelmäßiger Zustandsabgleich
 schließen Zustellungslücken. PostgreSQL ist die maßgebliche Datenquelle.
+
+## Zusammenarbeit
+Unter „Gruppen“ eine Gruppe anlegen und bereits registrierte Personen über ihre E-Mail
+hinzufügen. Eigentümer verwalten Mitglieder und Rollen. Im Quiz-Editor kann der Quiz-Eigentümer
+für eigene Gruppen freigeben. Gruppen-Bearbeiter (einschließlich Gruppen-Eigentümer) dürfen
+Entwürfe ändern und veröffentlichen; Betrachter dürfen ansehen, duplizieren und spielen.
+Nur der Quiz-Eigentümer archiviert das Original oder ändert dessen Freigaben.
+Bei parallelen Änderungen gewinnt genau ein Speichervorgang. Der andere erhält einen
+Konflikthinweis, behält seine Eingaben und kann den aktuellen Stand ausdrücklich neu laden.
+Das ist Zusammenarbeit mit Versionsprüfung, kein gemeinsames Echtzeit-Textdokument.

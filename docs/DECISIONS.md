@@ -30,3 +30,9 @@
   auch bei leerer Datenbank nicht gleichzeitig inkompatible Initialisierungen durchführen.
 - Lokaler App-Neustart wird abgesichert; DB-Failover/Redis-HA und Cloud-Loadbalancer bleiben
   Produktionsaufgaben. Das ist keine Behauptung einer bereits hochverfügbaren Infrastruktur.
+- Gruppen werden lokal über bestehende E-Mail-Konten besetzt, ohne Einladungsmails.
+- Quiz-Eigentümer kontrolliert Freigaben/Archiv; Gruppen-Eigentümer und Bearbeiter erhalten
+  Bearbeitungs-/Veröffentlichungsrechte an freigegebenen Quizzen, Betrachter Leserechte und
+  dürfen spielen/duplizieren. Widerruf wirkt bei der nächsten autorisierten Anfrage.
+- Gleichzeitige Änderungen werden per Revision und Zeilensperre abgeglichen. Keine automatische
+  Zusammenführung: Konflikt bleibt sichtbar und lokale Eingaben werden nicht verworfen.

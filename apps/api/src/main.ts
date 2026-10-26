@@ -4,6 +4,7 @@ import { NestFactory } from '@nestjs/core';
 import { connectRedis,health } from './realtime';
 import { initialize } from './db';
 import { GameGateway } from './gateway';
+import { GroupsController } from './groups';
 import { ReportsController } from './reports';
 import { AuthController } from './auth';
 import { ContentController,uploadDir } from './content';
@@ -13,7 +14,7 @@ import express from 'express';
 class Errors implements ExceptionFilter { catch(e:any,host:ArgumentsHost){const status=e instanceof HttpException?e.getStatus():400;host.switchToHttp().getResponse().status(status).json({message:e.code?'Anfrage konnte nicht gespeichert werden.':e.message??'Anfrage fehlgeschlagen.'});} }
 @Controller()
 class HealthController { @Get('health') async health() { return health(); } }
-@Module({controllers:[HealthController,AuthController,ContentController,ReportsController],providers:[GameGateway]})
+@Module({controllers:[HealthController,AuthController,ContentController,ReportsController,GroupsController],providers:[GameGateway]})
 class AppModule {}
 async function main() {
  await initialize();

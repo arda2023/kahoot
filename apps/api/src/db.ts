@@ -1,4 +1,5 @@
 import { Pool, PoolClient } from 'pg';
+import { groupsSchema } from './groups-schema';
 import { outboxSchema } from './outbox-schema';
 import { contentSchema } from './content-schema';
 export const pool = new Pool({ connectionString: process.env.DATABASE_URL ?? 'postgresql://quiz@127.0.0.1:55432/quiz', max: 20 });
@@ -34,6 +35,7 @@ export async function initialize() {
     CREATE INDEX IF NOT EXISTS answers_room ON answers(room_id,question_index);
   `);
   await c.query(contentSchema);
+  await c.query(groupsSchema);
   await c.query(outboxSchema);
  });
 }
