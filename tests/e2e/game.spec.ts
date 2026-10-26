@@ -12,7 +12,7 @@ test('host and two players play to the podium, with reload recovery',async({brow
  const correct=['Sechs','Wahr','Merkur'];
  for(let i=0;i<3;i++){
   await a.getByRole('button',{name:correct[i],exact:false}).click();await expect(a.getByText('Antwort gespeichert ✓')).toBeVisible();
-  if(i===0){await a.reload();await expect(a.getByText('Antwort gespeichert ✓')).toBeVisible();await expect(a.getByRole('button',{name:'Sechs'})).toBeDisabled();}
+  if(i===0){await host.reload();await expect(host.getByRole('heading',{name:'Wie viele Seiten hat ein Sechseck?'})).toBeVisible();await a.reload();await expect(a.getByText('Antwort gespeichert ✓')).toBeVisible();await expect(a.getByRole('button',{name:'Sechs'})).toBeDisabled();}
   await b.getByRole('button',{name:correct[i],exact:false}).click();
   await host.getByRole('button',{name:'Rangliste anzeigen'}).click();await expect(a.getByRole('heading',{name:'Rangliste',exact:true})).toBeVisible();
   await host.getByRole('button',{name:i===2?'Ergebnis anzeigen':'Nächste Frage'}).click();

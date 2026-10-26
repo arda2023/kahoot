@@ -8,7 +8,7 @@ export async function startApi(port:number,seconds=2):Promise<ChildProcess> {
  for(let i=0;i<100;i++){if(child.exitCode!==null)throw new Error(output);try{const r=await fetch(`http://localhost:${port}/health`);if(r.ok)return child;}catch{/* Wait for the child process to bind its port. */}await delay(100);}
  child.kill();throw new Error(`API did not start: ${output}`);
 }
-export async function stopApi(child:ChildProcess) {if(child.exitCode!==null)return;child.kill('SIGTERM');await Promise.race([new Promise<void>(r=>child.once('exit',()=>r())),delay(4000)]);if(child.exitCode===null)child.kill('SIGKILL');}
+export async function stopApi(child:ChildProcess) {if(child.exitCode!==null||child.signalCode!==null)return;child.kill('SIGTERM');await Promise.race([new Promise<void>(r=>child.once('exit',()=>r())),delay(4000)]);if(child.exitCode===null)child.kill('SIGKILL');}
 export async function socketAt(port:number):Promise<Socket>{const s=io(`http://localhost:${port}`,{transports:['websocket'],forceNew:true});await new Promise<void>((resolve,reject)=>{s.once('connect',()=>resolve());s.once('connect_error',reject);});return s;}
 export function cmd<T=any>(s:Socket,input:any):Promise<T>{return new Promise((resolve,reject)=>s.timeout(10000).emit('command',input,(err:Error|null,r:Reply<T>)=>err?reject(err):r.ok?resolve(r.data):reject(new Error(r.error))));}
 export const sync=(s:Socket,c:Credentials)=>cmd<Snapshot>(s,{action:'sync',...c});

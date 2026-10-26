@@ -56,3 +56,14 @@ Beginn: 26.10.2026, ca. 22:22 Europe/Berlin. Aktualisierte Zeitgrenze: zehn Stun
 - E2E: QR sichtbar, PIN vorausgefüllt, Präsentation umschaltbar, 390px-Ansicht ohne Overflow,
   Podium sichtbar, Bericht geladen und CSV mit sechs Antworten heruntergeladen.
 - Abschluss Phase 4: gesamtes Check-Kommando und Produktionsbuild grün.
+
+## Phase 5 — grün
+- Persistente Outbox mit atomarem DB-Trigger, Redis-Verteilung und Socket.IO Redis-Adapter.
+- Zwei API-Prozesse im Test: Zustandsänderungen erreichen Spieler auf anderer Instanz.
+- Harter SIGKILL nach Antwort-ACK, anschließend Ausfall beider APIs und Neustart:
+  gespeicherte Antwort bleibt erhalten, Wiederholung gibt keine zusätzlichen Punkte.
+- Ausstehende Outbox-Einträge werden nach Neustart abgearbeitet.
+- Abgelaufene Frage während API-Stillstand wird aus PostgreSQL wiederhergestellt und geschlossen;
+  nächste Frage wartet auf Host. E2E prüft nun Host- und Spieler-Reload.
+- Check, vier Integrationstests, zwei E2E und Produktionsbuild grün. Keine Blockaden.
+- Phase-3-CI 40406141175 erfolgreich.

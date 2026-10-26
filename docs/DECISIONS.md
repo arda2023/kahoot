@@ -21,3 +21,12 @@
   und als WebP neu gespeichert. Uploads liegen ausschließlich im Projektordner uploads/.
 - Editor speichert bewusst per Schaltfläche, warnt bei ungespeicherten Änderungen und prüft
   Revisionsnummern. Veröffentlichen erzeugt einen neuen unveränderlichen Datensatz.
+- Outbox wird durch einen PostgreSQL-Trigger innerhalb jeder Raumtransaktion angelegt.
+  Publisher sperren Batches mit SKIP LOCKED, veröffentlichen in Redis und markieren erst dann.
+  Ein Absturz kann doppelte Invalidierungen erzeugen; versionierte Snapshots sind idempotent.
+- Socket.IO Redis-Adapter verbindet API-Instanzen. Zusätzlich verteilt ein Redis-Kanal
+  Outbox-Invalidierungen an lokale Sockets jeder Instanz. Reconnect/Poll schließt Pub/Sub-Lücken.
+- DB-Schemamigrationen werden per PostgreSQL-Advisory-Lock serialisiert, damit zwei Instanzen
+  auch bei leerer Datenbank nicht gleichzeitig inkompatible Initialisierungen durchführen.
+- Lokaler App-Neustart wird abgesichert; DB-Failover/Redis-HA und Cloud-Loadbalancer bleiben
+  Produktionsaufgaben. Das ist keine Behauptung einer bereits hochverfügbaren Infrastruktur.

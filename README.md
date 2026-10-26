@@ -63,3 +63,28 @@ kehrt zur normalen Ansicht zurück. Spieler sehen Text und Symbole auf großen T
 Nach Spielende öffnet der Host den Ergebnisbericht mit Frageauswertung und CSV-Download.
 Der Bericht benötigt den Host-Zugang; Spieler können ihn nicht abrufen. Namen mit
 Formel-Präfix werden im CSV neutralisiert. Branding: packages/ui/src/index.ts.
+
+## Zwei API-Instanzen und Wiederherstellung
+Nach `npm run build:packages && npm run build -w @quiz/api` zwei Terminals öffnen:
+
+```sh
+PORT=3001 node apps/api/dist/main.js
+# Zweites Terminal:
+PORT=3002 node apps/api/dist/main.js
+```
+
+Beide verwenden dieselben Compose-Dienste. Socket.IO hat einen Redis-Adapter; die Outbox
+verteilt persistierte Zustandsänderungen an beide Instanzen. Web verwendet standardmäßig
+3001. Für eine zweite Web-Instanz den ersten Next-Devserver beenden und mit
+`NEXT_PUBLIC_API_URL=http://localhost:3002 npm run dev -w @quiz/web` starten.
+Ein automatischer Load Balancer ist lokal nicht eingerichtet; den Instanzwechsel testen
+Socket.IO-Integrationstests direkt. Im normalen Betrieb verbindet ein Reload wieder mit
+der konfigurierten Instanz, sobald sie verfügbar ist.
+
+Fristen liegen in PostgreSQL. Nach API-Neustart werden abgelaufene Fragen geschlossen.
+Host-Ausfall: aktuelle Frage läuft bis zum Ende; der Übergang zur nächsten Frage wartet
+auf den wiederverbundenen Host. Antworten sind vor dem ACK gespeichert. Eine erneute
+Abgabe derselben Antwortidentität liefert den gespeicherten Wert, ohne weitere Punkte.
+Outbox-Invalidierungen können mehrfach kommen; Clients laden einen versionierten Snapshot.
+Redis-Pub/Sub ist kein dauerhaftes Client-Postfach: Reconnect und regelmäßiger Zustandsabgleich
+schließen Zustellungslücken. PostgreSQL ist die maßgebliche Datenquelle.

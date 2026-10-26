@@ -1,4 +1,5 @@
 import { Pool, PoolClient } from 'pg';
+import { outboxSchema } from './outbox-schema';
 import { contentSchema } from './content-schema';
 export const pool = new Pool({ connectionString: process.env.DATABASE_URL ?? 'postgresql://quiz@127.0.0.1:55432/quiz', max: 20 });
 export async function transaction<T>(fn:(client:PoolClient)=>Promise<T>):Promise<T> {
@@ -8,7 +9,9 @@ export async function transaction<T>(fn:(client:PoolClient)=>Promise<T>):Promise
   finally { client.release(); }
 }
 export async function initialize() {
-  await pool.query(`
+ await transaction(async c=>{
+  await c.query('SELECT pg_advisory_xact_lock(912837401)');
+  await c.query(`
     CREATE TABLE IF NOT EXISTS rooms (
       id uuid PRIMARY KEY, pin text UNIQUE NOT NULL, host_hash text NOT NULL,
       quiz jsonb NOT NULL, phase text NOT NULL DEFAULT 'lobby', question_index int NOT NULL DEFAULT -1,
@@ -30,5 +33,7 @@ export async function initialize() {
     );
     CREATE INDEX IF NOT EXISTS answers_room ON answers(room_id,question_index);
   `);
-  await pool.query(contentSchema);
+  await c.query(contentSchema);
+  await c.query(outboxSchema);
+ });
 }

@@ -1,11 +1,15 @@
 import { WebSocketGateway, WebSocketServer, OnGatewayInit } from '@nestjs/websockets';
+import { attachRealtime,closeRedis,flushOutbox } from './realtime';
+import { pool } from './db';
 import { Server, Socket } from 'socket.io';
 import { answer, advance, createRoom, expireRooms, joinRoom, snapshot } from './game';
 @WebSocketGateway({cors:{origin:process.env.WEB_ORIGIN??'http://localhost:3000',credentials:true},maxHttpBufferSize:65536})
 export class GameGateway implements OnGatewayInit {
  @WebSocketServer() server!:Server;
  private timer?:NodeJS.Timeout;
- afterInit(server:Server) {
+ private processing=false;
+ async afterInit(server:Server) {
+  await attachRealtime(server);
   server.on('connection',(socket:Socket)=>{
    socket.on('command', async (input:any,ack:(response:unknown)=>void)=>{
     if(typeof ack!=='function') return;
@@ -26,7 +30,7 @@ export class GameGateway implements OnGatewayInit {
     } catch(error) { ack({ok:false,error:error instanceof Error?error.message:'Anfrage fehlgeschlagen.'}); }
    });
   });
-  this.timer=setInterval(()=>{void expireRooms().then(ids=>ids.forEach(id=>server.to(id).emit('changed'))).catch(error=>console.error('Timer recovery:',error.message));},200);
+  this.timer=setInterval(()=>{if(this.processing)return;this.processing=true;void expireRooms().then(()=>flushOutbox()).catch(error=>console.error('Recovery:',error.message)).finally(()=>{this.processing=false;});},200);
  }
- onModuleDestroy(){clearInterval(this.timer);}
+ async onModuleDestroy(){clearInterval(this.timer);await closeRedis();await pool.end();}
 }
